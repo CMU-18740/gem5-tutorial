@@ -77,7 +77,7 @@ libraries available in python.
 The first thing we'll do in this file is import the m5 library and all
 SimObjects that we've compiled.
 
-```
+```python
 import m5
 from m5.objects import *
 ```
@@ -90,7 +90,7 @@ ranges, the root clock domain, the root voltage domain, the kernel (in
 full-system simulation), etc. To create the system SimObject, we simply
 instantiate it like a normal python class:
 
-```
+```python
 system = System()
 ```
 
@@ -103,7 +103,7 @@ Finally, we have to specify a voltage domain for this clock domain.
 Since we don't care about system power right now, we'll just use the
 default options for the voltage domain.
 
-```
+```python
 system.clk_domain = SrcClockDomain()
 system.clk_domain.clock = '1GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
@@ -120,7 +120,7 @@ like `'512MB'`. Similarly, with time you can use time units (e.g.,
 `'5ns'`). These will automatically be converted to a common
 representation, respectively.
 
-```
+```python
 system.mem_mode = 'timing'
 system.mem_ranges = [AddrRange('512MB')]
 ```
@@ -131,13 +131,13 @@ in a single clock cycle to execute, except memory requests, which flow
 through the memory system. To create the CPU you can simply just
 instantiate the object:
 
-```
+```python
 system.cpu = TimingSimpleCPU()
 ```
 
 Next, we're going to create the system-wide memory bus:
 
-```
+```python
 system.membus = SystemXBar()
 ```
 
@@ -146,7 +146,7 @@ to it. In this case, since the system we want to simulate doesn't have
 any caches, we will connect the I-cache and D-cache ports directly to
 the membus. In this example system, we have no caches.
 
-```
+```python
 system.cpu.icache_port = system.membus.cpu_side_ports
 system.cpu.dcache_port = system.membus.cpu_side_ports
 ```
@@ -165,7 +165,7 @@ system.cpu.dcache_port = system.membus.cpu_side_ports
 > files. You can simply set the request port `=` to the response port
 > and they will be connected. For instance:
 >
-> ```
+> ```python
 > system.cpu.icache_port = system.l1_cache.cpu_side
 > ```
 >
@@ -180,7 +180,7 @@ system.cpu.dcache_port = system.membus.cpu_side_ports
 > configuration is that, it is allowed to have one port on one side, and an
 > array of ports on the other side. For example:
 >
-> ```
+> ```python
 > system.cpu.icache_port = system.membus.cpu_side_ports
 > ```
 >
@@ -203,9 +203,9 @@ functional-only port to allow the system to read and write memory.
 Connecting the PIO and interrupt ports to the memory bus is an
 x86-specific requirement. Other ISAs (e.g., ARM) do not require these 3
 extra lines. Since we are using ARM, we will comment out those lines 
-(they're kept here for illustrarion)
+(they're kept here for illustration)
 
-```
+```python
 system.cpu.createInterruptController()
 # system.cpu.interrupts[0].pio = system.membus.mem_side_ports
 # system.cpu.interrupts[0].int_requestor = system.membus.cpu_side_ports
@@ -218,7 +218,7 @@ Next, we need to create a memory controller and connect it to the
 membus. For this system, we'll use a simple DDR3 controller and it will
 be responsible for the entire memory range of our system.
 
-```
+```python
 system.mem_ctrl = MemCtrl()
 system.mem_ctrl.dram = DDR3_1600_8x8()
 system.mem_ctrl.dram.range = system.mem_ranges[0]
@@ -266,7 +266,7 @@ arguments to the executable in the rest of the list. Then we set the CPU
 to use the process as it's workload, and finally create the functional
 execution contexts in the CPU.
 
-```
+```python
 binary = 'tests/test-progs/hello/bin/arm/linux/hello'
 
 # for gem5 V21 and beyond (we are using V22)
@@ -287,7 +287,7 @@ As a note, you don't have to instantiate the python class then specify
 the parameters explicitly as member variables. You can also pass the
 parameters as named arguments, like the `Root` object below.
 
-```
+```python
 root = Root(full_system = False, system = system)
 m5.instantiate()
 ```
@@ -296,14 +296,14 @@ Finally, we can kick off the actual simulation! As a side now, gem5 is
 now using Python 3-style `print` functions, so `print` is no longer a
 statement and must be called as a function.
 
-```
+```python
 print("Beginning simulation!")
 exit_event = m5.simulate()
 ```
 
 And once simulation finishes, we can inspect the state of the system.
 
-```
+```python
 print('Exiting @ tick {} because {}'
       .format(m5.curTick(), exit_event.getCause()))
 ```
