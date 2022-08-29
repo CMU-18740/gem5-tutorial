@@ -20,7 +20,8 @@ which the event is *processed*. Generally, this is a class that inherits
 from `Event`. However, gem5 provides a wrapper function for creating
 simple events.
 
-In the header file for our `HelloObject`, we simply need to declare a
+In the header file for our `HelloObject` (`hello_object.hh` that is), 
+we simply need to declare a
 new function that we want to execute every time the event fires
 (`processEvent()`). This function must take no parameters and return
 nothing.
@@ -54,12 +55,12 @@ event. When printing the name, there will be an automatic
 The first parameter is simply a function that takes no parameters and
 has no return value (`std::function<void(void)>`). Usually, this is a
 simple lambda function that calls a member function. However, it can be
-any function you want. Below, we captute `this` in the lambda (`[this]`)
+any function you want. Below, we capture `this` in the lambda (`[this]`)
 so we can call member functions of the instance of the class.
 
 ```cpp
 HelloObject::HelloObject(const HelloObjectParams &params) :
-    SimObject(params), event([this]{processEvent();}, name())
+    SimObject(params), event([this] {processEvent();}, name())
 {
     DPRINTF(HelloExample, "Created the hello object\n");
 }
@@ -69,8 +70,7 @@ We also must define the implementation of the process function. In this
 case, we'll simply print something if we are debugging.
 
 ```cpp
-void
-HelloObject::processEvent()
+void HelloObject::processEvent()
 {
     DPRINTF(HelloExample, "Hello world! Processing the event!\n");
 }
@@ -80,7 +80,7 @@ Scheduling events
 -----------------
 
 Finally, for the event to be processed, we first have to *schedule* the
-event. For this we use the :cppschedule function. This function
+event. For this we use the `schedule()` function. This function
 schedules some instance of an `Event` for some time in the future
 (event-driven simulation does not allow events to execute in the past).
 
@@ -91,8 +91,7 @@ executed until the simulation begins for the first time (i.e. the
 `simulate()` function is called from a Python config file).
 
 ```cpp
-void
-HelloObject::startup()
+void HelloObject::startup()
 {
     schedule(event, 100);
 }
@@ -119,6 +118,10 @@ The output when you run gem5 with the "HelloExample" debug flag is now
     info: Entering event queue @ 0.  Starting simulation...
         100: hello: Hello world! Processing the event!
     Exiting @ tick 18446744073709551615 because simulate() limit reached
+
+In summary, when `startup()` is called it schedules an event at tick 100. gem5 processes the simulation tick by tick until tick 100, at which time `HelloObject` realizes that the event has occurred and calls the function that was passed to `event` in the constructor. That function was a lambda function that in turn called `processEvent()`, so the net effect of all this is that `processEvent()` is called at tick 100.
+
+You may be wondering why we used a lambda function to wrap around `processEvent()` instead of somehow registering `processEvent()` with `event` "directly". This is because in order to execute `processEvent()`, we may need the class object too because all of these are member functions, which is handled in the lambda function by capturing `this` (this pattern of "capturing a function's environment" is called a *closure*).
 
 More event scheduling
 ---------------------
@@ -156,7 +159,7 @@ Then, in the constructor add default values for the `latency` and
 
 ```cpp
 HelloObject::HelloObject(const HelloObjectParams &params) :
-    SimObject(params), event([this]{processEvent();}, name()),
+    SimObject(params), event([this] {processEvent();}, name()),
     latency(100), timesLeft(10)
 {
     DPRINTF(HelloExample, "Created the hello object\n");
@@ -166,14 +169,12 @@ HelloObject::HelloObject(const HelloObjectParams &params) :
 Finally, update `startup()` and `processEvent()`.
 
 ```cpp
-void
-HelloObject::startup()
+void HelloObject::startup()
 {
     schedule(event, latency);
 }
 
-void
-HelloObject::processEvent()
+void HelloObject::processEvent()
 {
     timesLeft--;
     DPRINTF(HelloExample, "Hello world! Processing the event! %d left\n", timesLeft);
@@ -214,3 +215,5 @@ the following.
        1000: hello: Hello world! Processing the event! 0 left
        1000: hello: Done firing!
     Exiting @ tick 18446744073709551615 because simulate() limit reached
+
+In a nutshell, `startup()` schedules the first event. Eventually that event fires and executes `processEvent()`, which prints the message and schedules another event `latency` ticks after the current tick. When that new event is reached, it fires and executes `processEvent()`, which prints the message and schedules another event...and so on, till the number of repetitions is reached.
