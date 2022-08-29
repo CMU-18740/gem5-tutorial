@@ -18,6 +18,8 @@ debug-print statements, without all of them enabled at the same time.
 When running gem5, you can specify which debug flags to enable from the
 command line.
 
+Debug flags are only enabled on *debug* and *opt* variants of gem5 (and not on the *fast* variant). We use the the *opt* variant to get both debug functionality and code optimization (and now you know why it's called *gem5.opt*).
+
 Using debug flags
 -----------------
 
@@ -41,7 +43,7 @@ console (about 7 MB).
     Global frequency set at 1000000000000 ticks per second
           0: system.mem_ctrl: Memory capacity 536870912 (536870912) bytes
           0: system.mem_ctrl: Row buffer size 8192 bytes with 128 columns per row buffer
-          0: system.remote_gdb.listener: listening for remote gdb #0 on port 7000
+          0: system.remote_gdb.listener: listening fort remote gdb #0 on port 7000
     Beginning simulation!
     info: Entering event queue @ 0.  Starting simulation...
           0: system.mem_ctrl: recvTimingReq: request ReadReq addr 400 size 8
@@ -277,12 +279,7 @@ Using functions other than DPRINTF
 gem5 provides a number of other functions that are useful in specific
 circumstances.
 
-> These functions are like the previous functions `:cppDDUMP`,
-> `:cppDPRINTF`, and `:cppDPRINTFR` except they do not take a flag as a
+> These functions are like the previous functions `DDUMP`,
+> `PRINTF`, and `DPRINTFR` except they do not take a flag as a
 > parameter. Therefore, these statements will *always* print whenever
 > debugging is enabled.
-
-All of these functions are only enabled if you compile gem5 in "opt" or
-"debug" mode. All other modes use empty placeholder macros for the above
-functions. Therefore, if you want to use debug flags, you must use
-either "gem5.opt" or "gem5.debug".

@@ -42,7 +42,7 @@ simply need to declare a new class for our SimObject and set its name
 and the C++ header that will define the C++ class for the SimObject.
 
 Once again, we will navigate to the *work* directory.
-We can create a file, `HelloObject.py`, in `work/src`.
+Create the file `HelloObject.py` in `work/src`
 
 ```python
 from m5.params import *
@@ -62,7 +62,7 @@ with this Python SimObject. Only in special circumstances should the
 The `cxx_header` is the file that contains the declaration of the class
 used as the `type` parameter. Again, the convention is to use the name
 of the SimObject with all lowercase and underscores, but this is only
-convention. You can specify any header file here. Due to a technicality, you will need to prepend "src_740" to all the `cxx_header` paths - this is because the `work/src` directory is copied into the gem5 installation as `gem5/src/src_740`.
+convention. You can specify any header file here. Due to a technicality, you will need to prepend "src_740" to all the `cxx_header` paths for these labs - this is because the `work/src` directory is copied into the gem5 installation as `gem5/src/src_740`. The path that you use for `cxx_header` is based on whatever comes *after* `gem5/src`. 
 
 The `cxx_class` is an attribute specifying the newly created SimObject
 is declared within the gem5 namespace. Most SimObjects in the gem5 code
@@ -72,7 +72,7 @@ Step 2: Implement your SimObject in C++
 ---------------------------------------
 
 Next, we need to create `hello_object.hh` and `hello_object.cc` in
-`work/src` directory which will implement the `HelloObject`.
+`work/src` directory which will implement the `HelloObject`. (`.hh` and `.cc` are also C++ file extensions, just like `.h`. and `.cpp`).
 
 We'll start with the header file for our `C++` object. By convention,
 gem5 wraps all header files in `#ifndef/#endif` with the name of the
@@ -130,7 +130,7 @@ should use debug flags. In the next chapter, we
 will modify this to use debug flags instead. However, for now, we'll
 simply use `std::cout` because it is simple.
 
-Notice again that the `#include` path to your header has a `src_740` prepended to it.
+Notice that the `#include` path to your header has a `src_740` prepended to it, for the same reasons as above.
 
 ```cpp
 #include "src_740/hello_object.hh"
@@ -203,6 +203,8 @@ To compile and link your new files you simply need to recompile gem5. You have a
 ```
 ./rebuild_gem5
 ```
+
+The first time a new SimObject is created, gem5 will recomiple a number of other files as well to integrate it in. Making incremental changes to your SimObject later will (should) be faster.
 
 Step 5: Create the config scripts to use your new SimObject
 -----------------------------------------------------------
