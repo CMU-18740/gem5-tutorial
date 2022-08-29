@@ -1,17 +1,14 @@
 ---
-layout: documentation
 title: Debugging gem5
 doc: Learning gem5
-parent: part2
-permalink: /documentation/learning_gem5/part2/debugging/
-author: Jason Lowe-Power
+author: Jason Lowe-Power (modified by Siddharth Sahay)
 ---
 
 
 Debugging gem5
 ==============
 
-In the [previous chapters](../helloobject) we covered how to
+In the previous chapters we covered how to
 create a very simple SimObject. In this chapter, we will replace the
 simple print to `stdout` with gem5's debugging support.
 
@@ -30,7 +27,7 @@ following output. Note that this generates *a lot* of output to the
 console (about 7 MB).
 
 ```
-    build/X86/gem5.opt --debug-flags=DRAM configs/learning_gem5/part1/simple.py | head -n 50
+./gem5.opt --debug-flags=DRAM configs/simple.py | head -n 50
 ```
 
     gem5 Simulator System.  http://gem5.org
@@ -91,7 +88,7 @@ flags shows details of how each instruction is executed by the simulated
 CPU.
 
 ```
-    build/X86/gem5.opt --debug-flags=Exec configs/learning_gem5/part1/simple.py | head -n 50
+./gem5.opt --debug-flags=Exec configs/simple.py | head -n 50
 ```
 
     gem5 Simulator System.  http://gem5.org
@@ -152,7 +149,7 @@ flags. You can see this, and all of the available debug flags, by
 running gem5 with the `--debug-help` parameter.
 
 ```
-    build/X86/gem5.opt --debug-help
+./gem5.opt --debug-help
 ```
 
     Base Flags:
@@ -192,14 +189,14 @@ running gem5 with the `--debug-help` parameter.
 Adding a new debug flag
 -----------------------
 
-In the [previous chapters](../helloobject), we used a simple
+In the previous chapters, we used a simple
 `std::cout` to print from our SimObject. While it is possible to use the
 normal C/C++ I/O in gem5, it is highly discouraged. So, we are now going
 to replace this and use gem5's debugging facilities instead.
 
 When creating a new debug flag, we first have to declare it in a
 SConscript file. Add the following to the SConscript file in the
-directory with your hello object code (src/learning\_gem5/).
+directory with your hello object code (`work/src`).
 
 ```python
 DebugFlag('HelloExample')
@@ -231,7 +228,7 @@ DPRINTF(HelloExample, "Created the hello object\n");
 
 `DPRINTF` is a C++ macro. The first parameter is a *debug flag* that has
 been declared in a SConscript file. We can use the flag `HelloExample` since we
-declared it in the `src/learning_gem5/SConscript` file. The rest of the
+declared it in the `work/src/SConscript` file. The rest of the
 arguments are variable and can be anything you would pass to a `printf`
 statement.
 
@@ -239,7 +236,7 @@ Now, if you recompile gem5 and run it with the "HelloExample" debug flag, you
 get the following result.
 
 ```
-    build/X86/gem5.opt --debug-flags=HelloExample configs/learning_gem5/part2/run_hello.py
+./gem5.opt --debug-flags=HelloExample configs/run_hello.py
 ```
 
     gem5 Simulator System.  http://gem5.org
@@ -256,10 +253,6 @@ get the following result.
     info: Entering event queue @ 0.  Starting simulation...
     Exiting @ tick 18446744073709551615 because simulate() limit reached
 
-You can find the updated SConcript file
-[here](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/src/learning_gem5/part2/SConscript)
-and the updated hello object code
-[here](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/src/learning_gem5/part2/hello_object.cc).
 
 Debug output
 ------------
