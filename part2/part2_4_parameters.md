@@ -61,12 +61,12 @@ to 1000. There are other convenience parameters like `Percent`,
 
 Once you have declared these parameters in the SimObject file, you need
 to copy their values to your C++ class in its constructor. The following
-code shows the changes to the `HelloObject` constructor
+code shows the changes to the `HelloObject` constructor in `hello_object.cc`
 
 ```cpp
 HelloObject::HelloObject(const HelloObjectParams &params) :
     SimObject(params),
-    event(*this),
+    event([this] {processEvent();}, name()),
     myName(params.name),
     latency(params.time_to_wait),
     timesLeft(params.number_of_fires)
@@ -83,11 +83,11 @@ is instantiated.
 
 However, assigning the name here is just an example of using the params
 object. For all SimObjects, there is a `name()` function that always
-returns the name. Thus, there is never a need to store the name like
+returns the name (we're already using this for `event`). Thus, there is never a need to store the name like
 above.
 
-To the HelloObject class declaration, add a member variable for the
-name.
+To the HelloObject class declaration in `hello_object.hh`, add a member variable for the
+name (remember to keep everything inside `namespace gem5{ }`)
 
 ```cpp
 class HelloObject : public SimObject
@@ -95,7 +95,7 @@ class HelloObject : public SimObject
   private:
     void processEvent();
 
-    EventWrapper event;
+    EventFunctionWrapper event;
 
     const std::string myName;
 
@@ -110,7 +110,7 @@ class HelloObject : public SimObject
 };
 ```
 
-When we run gem5 with the above, we get the following error:
+When we run gem5 with the above using the config from the previous chapter (`run_hello.py`), we get the following error:
 
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
@@ -159,7 +159,7 @@ The output of this simple script is the following when running the the
     2000000: hello: Done firing!
     Exiting @ tick 18446744073709551615 because simulate() limit reached
 
-You can also modify the config script to fire the event multiple times.
+You can also modify the config script to fire the event multiple times by setting `number_of_fires`.
 
 Other SimObjects as parameters
 ------------------------------
@@ -176,11 +176,11 @@ First, declare the SimObject in the SConscript file:
 ```python
 Import('*')
 
-SimObject('HelloObject.py')
+DebugFlag("HelloExample")
+
+SimObject('HelloObject.py', sim_objects=['HelloObject', 'GoodbyeObject'])
 Source('hello_object.cc')
 Source('goodbye_object.cc')
-
-DebugFlag('Hello')
 ```
 
 Next, you need to declare the new SimObject in a SimObject Python file.
@@ -204,7 +204,7 @@ class GoodbyeObject(SimObject):
     write_bandwidth = Param.MemoryBandwidth('100MB/s', "Bandwidth to fill the buffer")
 ```
 
-Now, we need to implement the `GoodbyeObject`.
+Now, we need to implement the `GoodbyeObject`. Make `goodbye_object.hh` in `work/src`
 
 ```cpp
 #ifndef __GOODBYE_OBJECT_HH__
@@ -215,6 +215,7 @@ Now, we need to implement the `GoodbyeObject`.
 #include "params/GoodbyeObject.hh"
 #include "sim/sim_object.hh"
 
+namespace gem5 {
 class GoodbyeObject : public SimObject
 {
   private:
@@ -226,7 +227,7 @@ class GoodbyeObject : public SimObject
      */
     void fillBuffer();
 
-    EventWrapper<GoodbyeObject, &GoodbyeObject::processEvent> event;
+    EventFunctionWrapper event;
 
     /// The bytes processed per tick
     float bandwidth;
@@ -255,9 +256,12 @@ class GoodbyeObject : public SimObject
      */
     void sayGoodbye(std::string name);
 };
+}
 
 #endif // __GOODBYE_OBJECT_HH__
 ```
+
+And now make `goodbye_object.cc` in `work/src` as well
 
 ```cpp
 #include "src_740/goodbye_object.hh"
@@ -265,8 +269,10 @@ class GoodbyeObject : public SimObject
 #include "debug/HelloExample.hh"
 #include "sim/sim_exit.hh"
 
+namespace gem5 {
+
 GoodbyeObject::GoodbyeObject(const GoodbyeObjectParams &params) :
-    SimObject(params), event(*this), bandwidth(params.write_bandwidth),
+    SimObject(params), event([this] {processEvent();}, name()), bandwidth(params.write_bandwidth),
     bufferSize(params.buffer_size), buffer(nullptr), bufferUsed(0)
 {
     buffer = new char[bufferSize];
@@ -321,11 +327,6 @@ GoodbyeObject::fillBuffer()
         exitSimLoop(buffer, 0, curTick() + bandwidth * bytes_copied);
     }
 }
-
-GoodbyeObject*
-GoodbyeObjectParams::create()
-{
-    return new GoodbyeObject(this);
 }
 ```
 
@@ -370,7 +371,7 @@ class HelloObject(SimObject):
 
 Second, we will add a reference to a `GoodbyeObject` to the
 `HelloObject` class.
-Don't forget to include goodbye_object.hh at the top of the hello_object.hh file!
+Don't forget to include `goodbye_object.hh` at the top of the hello_object.hh file!
 
 ```cpp
 #include <string>
@@ -379,12 +380,13 @@ Don't forget to include goodbye_object.hh at the top of the hello_object.hh file
 #include "params/HelloObject.hh"
 #include "sim/sim_object.hh"
 
+namespace gem5 {
 class HelloObject : public SimObject
 {
   private:
     void processEvent();
 
-    EventWrapper event;
+    EventFunctionWrapper event;
 
     /// Pointer to the corresponding GoodbyeObject. Set via Python
     GoodbyeObject* goodbye;
@@ -403,6 +405,7 @@ class HelloObject : public SimObject
 
     void startup();
 };
+}
 ```
 
 Then, we need to update the constructor and the process event function
@@ -412,16 +415,18 @@ pointer as a SimObject via the parameters by using the `NULL` special
 Python SimObject. We should *panic* when this happens since it is not a
 case this object has been coded to accept.
 
+(remember to keep everything inside `namespace gem5 {}` as before)
+
 ```cpp
 #include "src_740/hello_object.hh"
 
-#include "base/misc.hh"
 #include "base/trace.hh"
 #include "debug/HelloExample.hh"
 
-HelloObject::HelloObject(HelloObjectParams &params) :
+namespace gem5 {
+HelloObject::HelloObject(const HelloObjectParams &params) :
     SimObject(params),
-    event(*this),
+    event([this] {processEvent();}, name()),
     goodbye(params.goodbye_object),
     myName(params.name),
     latency(params.time_to_wait),
@@ -436,15 +441,14 @@ Once we have processed the number of event specified by the parameter,
 we should call the `sayGoodbye` function in the `GoodbyeObject`.
 
 ```cpp
-void
-HelloObject::processEvent()
+void HelloObject::processEvent()
 {
     timesLeft--;
     DPRINTF(HelloExample, "Hello world! Processing the event! %d left\n", timesLeft);
 
     if (timesLeft <= 0) {
         DPRINTF(HelloExample, "Done firing!\n");
-        goodbye.sayGoodbye(myName);
+        goodbye->sayGoodbye(myName);
     } else {
         schedule(event, curTick() + latency);
     }
@@ -454,7 +458,7 @@ HelloObject::processEvent()
 ### Updating the config script
 
 Lastly, we need to add the `GoodbyeObject` to the config script. Create
-a new config script, `hello_goodbye.py` and instantiate both the hello
+a new config script, `hello_goodbye.py` in `work/src` and instantiate both the hello
 and the goodbye objects. For instance, one possible script is the
 following.
 
@@ -474,7 +478,7 @@ exit_event = m5.simulate()
 print('Exiting @ tick %i because %s' % (m5.curTick(), exit_event.getCause()))
 ```
 
-Running this script generates the following output.
+Rebuilding gem5 and running this script with the `HelloExample` debug flag enabled generates the following output.
 
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
