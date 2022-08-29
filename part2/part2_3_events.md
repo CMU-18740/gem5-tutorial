@@ -1,10 +1,7 @@
 ---
-layout: documentation
 title: Event-driven programming
 doc: Learning gem5
-parent: part2
-permalink: /documentation/learning_gem5/part2/events/
-author: Jason Lowe-Power
+author: Jason Lowe-Power (modified by Siddharth Sahay)
 ---
 
 
@@ -13,14 +10,14 @@ Event-driven programming
 
 gem5 is an event-driven simulator. In this chapter, we will explore how
 to create and schedule events. We will be building from the simple
-`HelloObject` from [hello-simobject-chapter](../helloobject).
+`HelloObject` from Part 2.2.
 
 Creating a simple event callback
 --------------------------------
 
 In gem5's event-driven model, each event has a callback function in
 which the event is *processed*. Generally, this is a class that inherits
-from :cppEvent. However, gem5 provides a wrapper function for creating
+from `Event`. However, gem5 provides a wrapper function for creating
 simple events.
 
 In the header file for our `HelloObject`, we simply need to declare a
@@ -42,7 +39,7 @@ class HelloObject : public SimObject
     EventFunctionWrapper event;
 
   public:
-    HelloObject(HelloObjectParams *p);
+    HelloObject(const HelloObjectParams &p);
 
     void startup();
 };
@@ -61,10 +58,10 @@ any function you want. Below, we captute `this` in the lambda (`[this]`)
 so we can call member functions of the instance of the class.
 
 ```cpp
-HelloObject::HelloObject(HelloObjectParams *params) :
+HelloObject::HelloObject(const HelloObjectParams &params) :
     SimObject(params), event([this]{processEvent();}, name())
 {
-    DPRINTF(Hello, "Created the hello object\n");
+    DPRINTF(HelloExample, "Created the hello object\n");
 }
 ```
 
@@ -75,7 +72,7 @@ case, we'll simply print something if we are debugging.
 void
 HelloObject::processEvent()
 {
-    DPRINTF(Hello, "Hello world! Processing the event!\n");
+    DPRINTF(HelloExample, "Hello world! Processing the event!\n");
 }
 ```
 
@@ -106,7 +103,7 @@ would use some offset from `curTick()`, but since we know the startup()
 function is called when the time is currently 0, we can use an explicit
 tick value.
 
-The output when you run gem5 with the "Hello" debug flag is now
+The output when you run gem5 with the "HelloExample" debug flag is now
 
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
@@ -128,8 +125,8 @@ More event scheduling
 
 We can also schedule new events within an event process action. For
 instance, we are going to add a latency parameter to the `HelloObject`
-and a parameter for how many times to fire the event. In the [next
-chapter](parameters-chapter) we will make these parameters accessible
+and a parameter for how many times to fire the event. In the next
+chapter we will make these parameters accessible
 from the Python config files.
 
 To the HelloObject class declaration, add a member variable for the
@@ -158,7 +155,7 @@ Then, in the constructor add default values for the `latency` and
 `timesLeft`.
 
 ```cpp
-HelloObject::HelloObject(HelloObjectParams *params) :
+HelloObject::HelloObject(const HelloObjectParams &params) :
     SimObject(params), event([this]{processEvent();}, name()),
     latency(100), timesLeft(10)
 {
@@ -189,7 +186,7 @@ HelloObject::processEvent()
 }
 ```
 
-Now, when we run gem5, the event should fire 10 times, and the
+Now, when we run rebuild and gem5 with the HelloExample debug flag, the event should fire 10 times, and the
 simulation will end after 1000 ticks. The output should now look like
 the following.
 
@@ -217,8 +214,3 @@ the following.
        1000: hello: Hello world! Processing the event! 0 left
        1000: hello: Done firing!
     Exiting @ tick 18446744073709551615 because simulate() limit reached
-
-You can find the updated header file
-[here](/_pages/static/scripts/part2/events/hello_object.hh) and the
-implementation file
-[here](/_pages/static/scripts/part2/events/hello_object.cc).
