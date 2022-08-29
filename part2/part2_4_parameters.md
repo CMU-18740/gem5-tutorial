@@ -1,10 +1,7 @@
 ---
-layout: documentation
 title: Adding parameters to SimObjects and more events
 doc: Learning gem5
-parent: part2
-permalink: /documentation/learning_gem5/part2/parameters/
-author: Jason Lowe-Power
+author: Jason Lowe-Power (modified by Siddharth Sahay)
 ---
 
 
@@ -14,8 +11,7 @@ Adding parameters to SimObjects and more events
 One of the most powerful parts of gem5's Python interface is the ability
 to pass parameters from Python to the C++ objects in gem5. In this
 chapter, we will explore some of the kinds of parameters for SimObjects
-and how to use them building off of the simple `HelloObject` from the
-[previous chapters](http://www.gem5.org/documentation/learning_gem5/part2/helloobject/).
+and how to use them building off of the simple `HelloObject` from the previous chapters.
 
 Simple parameters
 -----------------
@@ -23,7 +19,7 @@ Simple parameters
 First, we will add parameters for the latency and number of times to
 fire the event in the `HelloObject`. To add a parameter, modify the
 `HelloObject` class in the SimObject Python file
-(`src/learning_gem5/part2/HelloObject.py`). Parameters are set by adding new
+(`work/src/HelloObject.py`). Parameters are set by adding new
 statements to the Python class that include a `Param` type.
 
 For instance, the following code has a parameter `time_to_wait` which is
@@ -33,11 +29,11 @@ parameter.
 ```python
 class HelloObject(SimObject):
     type = 'HelloObject'
-    cxx_header = "learning_gem5/part2/hello_object.hh"
+    cxx_header = "src_740/hello_object.hh"
+    cxx_class = "gem5::HelloObject"
 
     time_to_wait = Param.Latency("Time before firing the event")
-    number_of_fires = Param.Int(1, "Number of times to fire the event before "
-                                   "goodbye")
+    number_of_fires = Param.Int(1, "Number of times to fire the event before goodbye")
 ```
 
 `Param.<TypeName>` declares a parameter of type `TypeName`. Common types
@@ -65,7 +61,7 @@ to 1000. There are other convenience parameters like `Percent`,
 
 Once you have declared these parameters in the SimObject file, you need
 to copy their values to your C++ class in its constructor. The following
-code shows the changes to the `HelloObject` constructor.
+code shows the changes to the `HelloObject` constructor
 
 ```cpp
 HelloObject::HelloObject(const HelloObjectParams &params) :
@@ -75,7 +71,7 @@ HelloObject::HelloObject(const HelloObjectParams &params) :
     latency(params.time_to_wait),
     timesLeft(params.number_of_fires)
 {
-    DPRINTF(Hello, "Created the hello object with the name %s\n", myName);
+    DPRINTF(HelloExample, "Created the hello object with the name %s\n", myName);
 }
 ```
 
@@ -108,7 +104,7 @@ class HelloObject : public SimObject
     int timesLeft;
 
   public:
-    HelloObject(HelloObjectParams *p);
+    HelloObject(const HelloObjectParams &p);
 
     void startup();
 };
@@ -145,7 +141,7 @@ root.hello.time_to_wait = '2us'
 ```
 
 The output of this simple script is the following when running the the
-`Hello` debug flag.
+`HelloExample` debug flag.
 
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
@@ -187,9 +183,6 @@ Source('goodbye_object.cc')
 DebugFlag('Hello')
 ```
 
-The new SConscript file can be downloaded
-[here](/_pages/static/scripts/part2/parameters/SConscript).
-
 Next, you need to declare the new SimObject in a SimObject Python file.
 Since the `GoodbyeObject` is highly related to the `HelloObject`, we
 will use the same file. You can add the following code to
@@ -203,22 +196,19 @@ buffer. Once the buffer is full, the simulation will exit.
 ```python
 class GoodbyeObject(SimObject):
     type = 'GoodbyeObject'
-    cxx_header = "learning_gem5/part2/goodbye_object.hh"
+    cxx_header = "src_740/goodbye_object.hh"
+    cxx_class = "gem5::GoodbyeObject"
 
     buffer_size = Param.MemorySize('1kB',
                                    "Size of buffer to fill with goodbye")
-    write_bandwidth = Param.MemoryBandwidth('100MB/s', "Bandwidth to fill "
-                                            "the buffer")
+    write_bandwidth = Param.MemoryBandwidth('100MB/s', "Bandwidth to fill the buffer")
 ```
-
-The updated `HelloObject.py` file can be downloaded
-[here](/_pages/static/scripts/part2/parameters/HelloObject.py).
 
 Now, we need to implement the `GoodbyeObject`.
 
 ```cpp
-#ifndef __LEARNING_GEM5_GOODBYE_OBJECT_HH__
-#define __LEARNING_GEM5_GOODBYE_OBJECT_HH__
+#ifndef __GOODBYE_OBJECT_HH__
+#define __GOODBYE_OBJECT_HH__
 
 #include <string>
 
@@ -254,7 +244,7 @@ class GoodbyeObject : public SimObject
     int bufferUsed;
 
   public:
-    GoodbyeObject(GoodbyeObjectParams *p);
+    GoodbyeObject(const GoodbyeObjectParams &p);
     ~GoodbyeObject();
 
     /**
@@ -266,13 +256,13 @@ class GoodbyeObject : public SimObject
     void sayGoodbye(std::string name);
 };
 
-#endif // __LEARNING_GEM5_GOODBYE_OBJECT_HH__
+#endif // __GOODBYE_OBJECT_HH__
 ```
 
 ```cpp
-#include "learning_gem5/part2/goodbye_object.hh"
-
-#include "debug/Hello.hh"
+#include "src_740/goodbye_object.hh"
+#include "base/trace.hh"
+#include "debug/HelloExample.hh"
 #include "sim/sim_exit.hh"
 
 GoodbyeObject::GoodbyeObject(const GoodbyeObjectParams &params) :
@@ -280,7 +270,7 @@ GoodbyeObject::GoodbyeObject(const GoodbyeObjectParams &params) :
     bufferSize(params.buffer_size), buffer(nullptr), bufferUsed(0)
 {
     buffer = new char[bufferSize];
-    DPRINTF(Hello, "Created the goodbye object\n");
+    DPRINTF(HelloExample, "Created the goodbye object\n");
 }
 
 GoodbyeObject::~GoodbyeObject()
@@ -291,14 +281,14 @@ GoodbyeObject::~GoodbyeObject()
 void
 GoodbyeObject::processEvent()
 {
-    DPRINTF(Hello, "Processing the event!\n");
+    DPRINTF(HelloExample, "Processing the event!\n");
     fillBuffer();
 }
 
 void
 GoodbyeObject::sayGoodbye(std::string other_name)
 {
-    DPRINTF(Hello, "Saying goodbye to %s\n", other_name);
+    DPRINTF(HelloExample, "Saying goodbye to %s\n", other_name);
 
     message = "Goodbye " + other_name + "!! ";
 
@@ -322,11 +312,11 @@ GoodbyeObject::fillBuffer()
 
     if (bufferUsed < bufferSize - 1) {
         // Wait for the next copy for as long as it would have taken
-        DPRINTF(Hello, "Scheduling another fillBuffer in %d ticks\n",
+        DPRINTF(HelloExample, "Scheduling another fillBuffer in %d ticks\n",
                 bandwidth * bytes_copied);
         schedule(event, curTick() + bandwidth * bytes_copied);
     } else {
-        DPRINTF(Hello, "Goodbye done copying!\n");
+        DPRINTF(HelloExample, "Goodbye done copying!\n");
         // Be sure to take into account the time for the last bytes
         exitSimLoop(buffer, 0, curTick() + bandwidth * bytes_copied);
     }
@@ -338,11 +328,6 @@ GoodbyeObjectParams::create()
     return new GoodbyeObject(this);
 }
 ```
-
-The header file can be downloaded
-[here](/_pages/static/scripts/part2/parameters/goodbye_object.hh) and the
-implementation can be downloaded
-[here](/_pages/static/scripts/part2/parameters/goodbye_object.cc).
 
 The interface to this `GoodbyeObject` is simple a function `sayGoodbye`
 which takes a string as a parameter. When this function is called, the
@@ -374,17 +359,14 @@ like a normal parameter.
 ```python
 class HelloObject(SimObject):
     type = 'HelloObject'
-    cxx_header = "learning_gem5/part2/hello_object.hh"
+    cxx_header = "src_740/hello_object.hh"
+    cxx_class = "gem5::HelloObject"
 
     time_to_wait = Param.Latency("Time before firing the event")
-    number_of_fires = Param.Int(1, "Number of times to fire the event before "
-                                   "goodbye")
+    number_of_fires = Param.Int(1, "Number of times to fire the event before goodbye")
 
     goodbye_object = Param.GoodbyeObject("A goodbye object")
 ```
-
-The updated `HelloObject.py` file can be downloaded
-[here](/_pages/static/scripts/part2/parameters/HelloObject.py).
 
 Second, we will add a reference to a `GoodbyeObject` to the
 `HelloObject` class.
@@ -393,7 +375,7 @@ Don't forget to include goodbye_object.hh at the top of the hello_object.hh file
 ```cpp
 #include <string>
 
-#include "learning_gem5/part2/goodbye_object.hh"
+#include "src_740/goodbye_object.hh"
 #include "params/HelloObject.hh"
 #include "sim/sim_object.hh"
 
@@ -417,7 +399,7 @@ class HelloObject : public SimObject
     int timesLeft;
 
   public:
-    HelloObject(HelloObjectParams *p);
+    HelloObject(const HelloObjectParams &p);
 
     void startup();
 };
@@ -431,10 +413,11 @@ Python SimObject. We should *panic* when this happens since it is not a
 case this object has been coded to accept.
 
 ```cpp
-#include "learning_gem5/part2/hello_object.hh"
+#include "src_740/hello_object.hh"
 
 #include "base/misc.hh"
-#include "debug/Hello.hh"
+#include "base/trace.hh"
+#include "debug/HelloExample.hh"
 
 HelloObject::HelloObject(HelloObjectParams &params) :
     SimObject(params),
@@ -444,7 +427,7 @@ HelloObject::HelloObject(HelloObjectParams &params) :
     latency(params.time_to_wait),
     timesLeft(params.number_of_fires)
 {
-    DPRINTF(Hello, "Created the hello object with the name %s\n", myName);
+    DPRINTF(HelloExample, "Created the hello object with the name %s\n", myName);
     panic_if(!goodbye, "HelloObject must have a non-null GoodbyeObject");
 }
 ```
@@ -457,21 +440,16 @@ void
 HelloObject::processEvent()
 {
     timesLeft--;
-    DPRINTF(Hello, "Hello world! Processing the event! %d left\n", timesLeft);
+    DPRINTF(HelloExample, "Hello world! Processing the event! %d left\n", timesLeft);
 
     if (timesLeft <= 0) {
-        DPRINTF(Hello, "Done firing!\n");
+        DPRINTF(HelloExample, "Done firing!\n");
         goodbye.sayGoodbye(myName);
     } else {
         schedule(event, curTick() + latency);
     }
 }
 ```
-
-You can find the updated header file
-[here](/_pages/static/scripts/part2/parameters/hello_object.hh) and the
-implementation file
-[here](/_pages/static/scripts/part2/parameters/hello_object.cc).
 
 ### Updating the config script
 
@@ -495,9 +473,6 @@ print("Beginning simulation!")
 exit_event = m5.simulate()
 print('Exiting @ tick %i because %s' % (m5.curTick(), exit_event.getCause()))
 ```
-
-You can download this script
-[here](/_pages/static/scripts/part2/parameters/hello_goodbye.py).
 
 Running this script generates the following output.
 
