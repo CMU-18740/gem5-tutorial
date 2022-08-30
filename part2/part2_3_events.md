@@ -216,4 +216,6 @@ the following.
        1000: hello: Done firing!
     Exiting @ tick 18446744073709551615 because simulate() limit reached
 
+You can find the reference implementation in `run_hello23.py`, `hello_object23.hh`, `hello_object23.cc`, and `HelloObject23.py`.
+
 In a nutshell, `startup()` schedules the first event. Eventually that event fires and executes `processEvent()`, which prints the message and schedules another event `latency` ticks after the current tick. When that new event is reached, it fires and executes `processEvent()`, which prints the message and schedules another event...and so on, till the number of repetitions is reached.

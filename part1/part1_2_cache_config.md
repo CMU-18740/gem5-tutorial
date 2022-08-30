@@ -176,9 +176,6 @@ def connectMemSideBus(self, bus):
     self.mem_side = bus.cpu_side_ports
 ```
 
-The full file can be found in the gem5 source (again, this is the x86 version, while we are using ARM) at
-[`configs/learning_gem5/part1/caches.py`](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/caches.py).
-
 Adding caches to the simple config file
 ------------------------------------
 
@@ -249,9 +246,7 @@ Note that `system.membus = SystemXBar()` has been defined before
 `system.l2cache.connectMemSideBus`. Everything else in the file
 stays the same! Now we have a complete configuration with a
 two-level cache hierarchy. If you run the current file, `hello`
-should now finish in 57467000 ticks (or similar). The full script can
-be found in the gem5 source (once again, this is the x86 version, we are doing ARM) at
-[`configs/learning_gem5/part1/two_level.py](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/two_level.py).
+should now finish in 57467000 ticks (or similar). 
 
 Adding parameters to your script
 --------------------------------
@@ -270,9 +265,11 @@ current gem5 scripts. To get started using :pyoptparse, you can consult
 the online Python documentation.
 
 To add options to our two-level cache configuration, after importing our
-caches, let's add some options.
+caches, let's add some options. First, make a copy of `two_level.py`, say `two_level_opt.py`.
+Also make a copy of `caches.py`, say `caches_opt.py` (all of these in `work/configs` of course). We also need to change the cache import in `two_level_opt.py` to use `cache_opt.py` since we'll be editing the caches too.
 
 ```python
+from caches_opt import *
 import argparse
 
 parser = argparse.ArgumentParser(description='A simple system with 2-level cache.')
@@ -296,7 +293,7 @@ system.workload = SEWorkload.init_compatible(options.binary)
 ```
 You'll also need to change the `process.cmd` value similarly. You could set the old binary path as the default value for `options.binary` in the `add_argument` call at the top of the file.
 Now, you can run
-`./gem5.opt configs/two_level.py --help` which
+`./gem5.opt configs/two_level_opt.py --help` which
 will display the options you just added.
 
 Next, we need to pass these options onto the caches that we create in
@@ -311,7 +308,7 @@ system.cpu.dcache = L1DCache(options)
 system.l2cache = L2Cache(options)
 ```
 
-In caches.py, we need to add constructors (`__init__` functions in
+In `caches_opt.py` (rememeber, we aren't using `caches.py` anymore), we need to add constructors (`__init__` functions in
 Python) to each of our classes. Starting with our base L1 cache, we'll
 just add an empty constructor since we don't have any parameters which
 apply to the base L1 cache. However, we can't forget to call the super
@@ -366,7 +363,7 @@ With these changes, you can now pass the cache sizes into your script
 from the command line like below.
 
 ```sh
-./gem5.opt configs/two_level.py --l2_size='1MB' --l1d_size='128kB'
+./gem5.opt configs/two_level_opt.py --l2_size='1MB' --l1d_size='128kB'
 ```
 
 As before the gem5 version, command line, and ticks may differ
@@ -388,7 +385,3 @@ As before the gem5 version, command line, and ticks may differ
     info: Entering event queue @ 0.  Starting simulation...
     Hello world!
     Exiting @ tick 57467000 because exiting with last active thread context
-
-The full scripts can be found in the gem5 source (once again, this is the x86 version, we are using ARM) at
-[`configs/learning_gem5/part1/caches.py`](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/caches.py) and
-[`configs/learning_gem5/part1/two_level.py`](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/two_level.py).

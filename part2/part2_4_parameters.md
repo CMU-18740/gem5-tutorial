@@ -515,6 +515,8 @@ Rebuilding gem5 and running this script with the `HelloExample` debug flag enabl
     10915552: hello.goodbye_object: Goodbye done copying!
     Exiting @ tick 10944163 because Goodbye hello!! Goodbye hello!! Goodbye hello!! Goodbye hello!! Goodbye hello!! Goodbye hello!! Goo
 
+You can find the reference implementation in `hello_goodbye.py`, `run_hello.py`, `hello_object.hh`, `hello_object.cc`, and `HelloObject.py`.
+
 You can modify the parameters to these two SimObjects and see how the
 overall execution time (Exiting @ tick **10944163**) changes. To run
 these tests, you may want to remove the debug flag so there is less

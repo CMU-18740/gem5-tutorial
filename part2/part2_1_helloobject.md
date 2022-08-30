@@ -278,6 +278,9 @@ It should give you output resembling the below
     info: Entering event queue @ 0.  Starting simulation...
     Exiting @ tick 18446744073709551615 because simulate() limit reached
 ```
+
+You can find the reference implementation in `run_hello21.py`, `hello_object21.hh`, `hello_object21.cc`, and `HelloObject21.py`.
+
 Congrats! You have written your first SimObject. In the next chapters,
 we will extend this SimObject and explore what you can do with
 SimObjects.

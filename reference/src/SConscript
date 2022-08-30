@@ -1,0 +1,21 @@
+Import('*')
+
+DebugFlag("HelloExample")
+
+# Part 2.1
+SimObject('HelloObject21.py', sim_objects=['HelloObject21'])
+Source('hello_object21.cc')
+
+# Part 2.2
+SimObject('HelloObject22.py', sim_objects=['HelloObject22'])
+Source('hello_object22.cc')
+
+# Part 2.3
+SimObject('HelloObject23.py', sim_objects=['HelloObject23'])
+Source('hello_object23.cc')
+
+# Part 2.4
+SimObject('HelloObject.py', sim_objects=['HelloObject', 'GoodbyeObject'])
+Source('hello_object.cc')
+Source('goodbye_object.cc')
+

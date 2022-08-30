@@ -255,6 +255,7 @@ get the following result.
     info: Entering event queue @ 0.  Starting simulation...
     Exiting @ tick 18446744073709551615 because simulate() limit reached
 
+You can find the reference implementation in `run_hello22.py`, `hello_object22.hh`, `hello_object22.cc`, and `HelloObject22.py`.
 
 Debug output
 ------------
