@@ -322,7 +322,7 @@ from the *work* directory as
 ./gem5.opt configs/simple.py
 ```
 
-The output should be:
+The output should be (the gem5 version, command line, and ticks may differ):
 
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
@@ -331,7 +331,7 @@ The output should be:
     gem5 compiled May 17 2021 18:05:59
     gem5 started May 17 2021 22:05:20
     gem5 executing on amarillo, pid 75197
-    command line: build/X86/gem5.opt configs/tutorial/part1/simple.py
+    command line: build/ARM/gem5.opt configs/simple.py
 
     Global frequency set at 1000000000000 ticks per second
     warn: No dot file generated. Please install pydot to generate the dot file and pdf.

@@ -369,6 +369,8 @@ from the command line like below.
 ./gem5.opt configs/two_level.py --l2_size='1MB' --l1d_size='128kB'
 ```
 
+As before the gem5 version, command line, and ticks may differ
+
     gem5 Simulator System.  http://gem5.org
     gem5 is copyrighted software; use the --copyright option for details.
 
@@ -387,6 +389,6 @@ from the command line like below.
     Hello world!
     Exiting @ tick 57467000 because exiting with last active thread context
 
-The full scripts can be found in the gem5 source (once once again, this is the x86 version, we are using ARM) at
+The full scripts can be found in the gem5 source (once again, this is the x86 version, we are using ARM) at
 [`configs/learning_gem5/part1/caches.py`](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/caches.py) and
 [`configs/learning_gem5/part1/two_level.py`](https://gem5.googlesource.com/public/gem5/+/refs/heads/stable/configs/learning_gem5/part1/two_level.py).
