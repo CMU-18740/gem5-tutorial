@@ -519,7 +519,3 @@ You can modify the parameters to these two SimObjects and see how the
 overall execution time (Exiting @ tick **10944163**) changes. To run
 these tests, you may want to remove the debug flag so there is less
 output to the terminal.
-
-In the next chapters, we will create a more complex and more useful
-SimObject, culminating with a simple blocking uniprocessor cache
-implementation.
