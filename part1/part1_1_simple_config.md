@@ -355,4 +355,4 @@ Next, we will add caches to our configuration file to model a more
 complex system.
 
 ### Next Page
-[Part 1.2](part1_2_cache_config.md)
+[Part 1.2: Cache Config](part1_2_cache_config.md)
