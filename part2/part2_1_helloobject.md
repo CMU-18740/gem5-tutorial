@@ -284,3 +284,6 @@ You can find the reference implementation in `run_hello21.py`, `hello_object21.h
 Congrats! You have written your first SimObject. In the next chapters,
 we will extend this SimObject and explore what you can do with
 SimObjects.
+
+### Next Page
+[Part 2.2: Debugging](part2_2_debugging.md)
