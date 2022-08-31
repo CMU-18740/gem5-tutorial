@@ -270,7 +270,7 @@ from caches_opt import *
 import argparse
 
 parser = argparse.ArgumentParser(description='A simple system with 2-level cache.')
-parser.add_argument("binary", default="", nargs="?", type=str,
+parser.add_argument("binary", default="tests/test-progs/hello/bin/arm/linux/hello", nargs="?", type=str,
                     help="Path to the binary to execute.")
 parser.add_argument("--l1i_size",
                     help=f"L1 instruction cache size. Default: 16kB.")
@@ -357,7 +357,7 @@ def __init__(self, options=None):
 ```
 
 With these changes, you can now pass the cache sizes into your script
-from the command line like below.
+from the command line like below. You can also pass the binary to execute as a command line param, and if you don't it'll fall back to the `hello` binary.
 
 ```sh
 ./gem5.opt configs/two_level_opt.py --l2_size='1MB' --l1d_size='128kB'
