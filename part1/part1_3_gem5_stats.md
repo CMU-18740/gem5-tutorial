@@ -255,3 +255,6 @@ components.
     system.mem_ctrl.dram.bwTotal::total         403153114                       # Total bandwidth to/from this memory ((Byte/Second))
     system.mem_ctrl.dram.readBursts                   362                       # Number of DRAM read bursts (Count)
     system.mem_ctrl.dram.writeBursts                    0                       # Number of DRAM write bursts (Count)
+    
+### Next Page
+[Part 1.4](part1_4_gem5_example_configs.md)
