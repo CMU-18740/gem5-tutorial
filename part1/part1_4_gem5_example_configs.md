@@ -351,3 +351,6 @@ Below are a few important options from that list:
 * `--errout=ERROUT`
 
     * Redirect stderr to a file. Similar to above.
+
+### Next Page
+[Part 2: Creating a simple SimObject](../part2/part2_1_helloobject.md)
