@@ -387,4 +387,4 @@ As before the gem5 version, command line, and ticks may differ
     Exiting @ tick 57467000 because exiting with last active thread context
  
 ### Next Page
-[Part 1.3](part1_3_gem5_stats.md)
+[Part 1.3: Understanding Stats](part1_3_gem5_stats.md)
