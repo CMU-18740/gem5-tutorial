@@ -19,7 +19,7 @@ past six years as a graduate student at the University of
 Wisconsin-Madison. The examples presented are just one way to do it.
 Unlike Python, whose mantra is "There should be one-- and preferably
 only one --obvious way to do it." (from The Zen of Python. See
-[The Zen of Python](https://www.python.org/dev/peps/pep-0020/#the-zen-of-python){:target="_blank"}), in gem5 there are a number of different ways to
+[The Zen of Python](https://www.python.org/dev/peps/pep-0020/#the-zen-of-python)), in gem5 there are a number of different ways to
 accomplish the same thing. Thus, many of the examples presented in this
 book are my opinion of the best way to do things.
 
@@ -52,4 +52,4 @@ To get the most out of gem5, you'll most likely need to add new capabilities spe
 As you add the new features you need, please consider contributing your changes back to gem5. That way others can take advantage of your hard work, and gem5 can become an even better simulator.
 
 ### Next Page
-[Part 1](../part1/part1_1_simple_config.md)
+[Part 1: Configuration Scripts](../part1/part1_1_simple_config.md)
