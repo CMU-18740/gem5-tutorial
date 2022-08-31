@@ -11,9 +11,7 @@ Adding cache to the configuration script
 Using the previous configuration script as a starting point,
 this chapter will walk through a more complex configuration. We will add
 a cache hierarchy to the system as shown in
-the figure below. Additionally, this chapter
-will cover understanding the gem5 statistics output and adding command
-line parameters to your scripts.
+the figure below. We will also see how to add command-line parameters to the script.
 
 ![A system configuration with a two-level cache
 hierarchy.](figures/advanced_config.png)
@@ -21,9 +19,9 @@ hierarchy.](figures/advanced_config.png)
 Creating cache objects
 ----------------------
 
-We are going to use the classic caches, instead of ruby-intro-chapter,
+We are going to use the classic caches, instead of Ruby,
 since we are modeling a single CPU system and we don't care about
-modeling cache coherence. We will extend the Cache SimObject and
+modeling cache coherence. We will extend the `Cache` SimObject and
 configure it for our system. First, we must understand the parameters
 that are used to configure Cache objects.
 
@@ -55,7 +53,7 @@ The Cache SimObject declaration can be found in *buildspace/gem5/src/mem/cache/C
 This Python file defines the parameters which you can set of the
 SimObject. Under the hood, when the SimObject is instantiated these
 parameters are passed to the C++ implementation of the object. The
-`Cache` SimObject inherits from the `BaseCache` object shown below.
+`Cache` SimObject inherits from the `BaseCache` object.
 
 Within the `BaseCache` class, there are a number of *parameters*. For
 instance, `assoc` is an integer parameter. Some parameters, like
@@ -80,7 +78,7 @@ we are going to extend in this file.
 from m5.objects import Cache
 ```
 
-Next, we can treat the BaseCache object just like any other Python class
+Next, we can treat the `Cache` object just like any other Python class
 and extend it. We can name the new cache anything we want. Let's start
 by making an L1 cache.
 
@@ -94,14 +92,13 @@ class L1Cache(Cache):
     tgts_per_mshr = 20
 ```
 
-Here, we are setting some of the parameters of the BaseCache that do not
+Here, we are setting some of the parameters of the `Cache` that do not
 have default values. To see all of the possible configuration options,
 and to find which are required and which are optional, you have to look
-at the source code of the SimObject. In this case, we are using
-BaseCache.
+at the source code of the SimObject.
 
-We have extended `BaseCache` and set most of the parameters that do not
-have default values in the `BaseCache` SimObject. Next, let's two more
+We have extended `Cache` and set most of the parameters that do not
+have default values in the `Cache` SimObject. Next, let's two more
 sub-classes of L1Cache, an L1DCache and L1ICache
 
 ```python
@@ -126,7 +123,7 @@ class L2Cache(Cache):
 ```
 
 Now that we have specified all of the necessary parameters required for
-`BaseCache`, all we have to do is instantiate our sub-classes and
+`Cache`, all we have to do is instantiate our sub-classes and
 connect the caches to the interconnect. However, connecting lots of
 objects up to complex interconnects can make configuration files quickly
 grow and become unreadable. Therefore, let's first add some helper
