@@ -8,9 +8,6 @@ author: Jason Lowe-Power (modified by Siddharth Sahay)
 Creating a *very* simple SimObject
 ==================================
 
-**Note**: gem5 has SimObject named `SimpleObject`. Implementing another
-`SimpleObject` SimObject will result in confusing compiler issues.
-
 Almost all objects in gem5 inherit from the base SimObject type.
 SimObjects export the main interfaces to all objects in gem5. SimObjects
 are wrapped `C++` objects that are accessible from the `Python`
