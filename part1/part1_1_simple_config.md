@@ -353,3 +353,6 @@ that `MinorCPU` does not work with X86 as of gem5 version 22.0.0.
 
 Next, we will add caches to our configuration file to model a more
 complex system.
+
+### Next Page
+[Part 1.2](part1_2_cache_config.md)
