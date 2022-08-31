@@ -284,3 +284,6 @@ circumstances.
 > `PRINTF`, and `DPRINTFR` except they do not take a flag as a
 > parameter. Therefore, these statements will *always* print whenever
 > debugging is enabled.
+
+### Next Page
+[Part 2.3: Events](part2_3_events.md)
