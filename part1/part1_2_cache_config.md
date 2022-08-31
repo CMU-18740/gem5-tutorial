@@ -263,7 +263,7 @@ the online Python documentation.
 
 To add options to our two-level cache configuration, after importing our
 caches, let's add some options. First, make a copy of `two_level.py`, say `two_level_opt.py`.
-Also make a copy of `caches.py`, say `caches_opt.py` (all of these in `work/configs` of course). We also need to change the cache import in `two_level_opt.py` to use `cache_opt.py` since we'll be editing the caches too.
+Also make a copy of `caches.py`, say `caches_opt.py` (all of these in `work/configs` of course). We also need to change the cache import in `two_level_opt.py` to use `caches_opt.py` since we'll be editing the caches too.
 
 ```python
 from caches_opt import *
