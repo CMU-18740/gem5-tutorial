@@ -50,3 +50,6 @@ gem5 is designed for use in computer architecture research, but if you're trying
 To get the most out of gem5, you'll most likely need to add new capabilities specific to your project's goals. gem5's modular design should help you make modifications without having to understand every part of the simulator.
 
 As you add the new features you need, please consider contributing your changes back to gem5. That way others can take advantage of your hard work, and gem5 can become an even better simulator.
+
+### Next Page
+[Part 1.1](../part1/part1_1_simple_config.md)
