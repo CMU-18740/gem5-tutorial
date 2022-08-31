@@ -257,4 +257,4 @@ components.
     system.mem_ctrl.dram.writeBursts                    0                       # Number of DRAM write bursts (Count)
     
 ### Next Page
-[Part 1.4](part1_4_gem5_example_configs.md)
+[Part 1.4: Default Configs](part1_4_gem5_example_configs.md)
